@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Diagnose – PlantCare</title><link rel="stylesheet" href="css/style.css"></head><body data-page="diagnose"><header class="nav"><a class="brand" href="index.html">🌱 PlantCare</a><nav><a href="index.html" data-p="index">Home</a><a href="diagnose.html" data-p="diagnose">Diagnose</a><a href="experts.html" data-p="experts">Experts</a></nav></header>
+<main class="narrow">
+<h1 class="title">Plant Diagnosis</h1>
+<p class="sub">Two quick steps. The Java backend analyses your symptoms.</p>
+<form id="diagnose-form" class="card form">
+  <label class="step" for="plant"><span>1</span> Select plant</label>
+  <select id="plant">
+    <option value="">Choose a plant…</option>
+    <option>Tomato</option><option>Rice</option><option>Potato</option><option>Chilli</option><option>Banana</option><option>Maize</option><option>Brinjal</option><option>Okra</option><option>Coconut</option>
+  </select>
+  <div class="step"><span>2</span> Select symptoms <small>(choose all that apply)</small></div>
+  <div class="symptoms">
+    <label class="sym"><input type="checkbox" name="symptom" value="yellow_leaves"><b>🍂 Yellow leaves</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="slow_growth"><b>🐌 Slow growth</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="brown_edges"><b>🟤 Brown leaf edges</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="leaf_curling"><b>🌀 Leaf curling</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="pale_new_leaves"><b>🌱 Pale/new leaves</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="interveinal_yellowing"><b>🍃 Yellowing between veins</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="weak_stems"><b>🪵 Weak stems</b></label>
+    <label class="sym"><input type="checkbox" name="symptom" value="leaf_drop"><b>🍁 Early leaf drop</b></label>
+  </div>
+  <p id="error" class="error" role="alert"></p>
+  <button class="btn" type="submit">Analyze Plant</button>
+</form>
+<div id="result"></div>
+<section class="card" style="margin-top:24px"><h3>Recent Diagnoses</h3><ul id="history" class="hist"></ul></section>
+</main>
+<footer class="foot">PlantCare provides preliminary symptom-based guidance and is not a substitute for professional agricultural diagnosis.</footer><script src="js/app.js"></script></body></html>
