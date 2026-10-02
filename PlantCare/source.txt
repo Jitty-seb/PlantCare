@@ -1,0 +1,11 @@
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\Deficiency.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\DiagnosisSystem.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\Expert.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\ExpertManager.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\IronDeficiency.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\MagnesiumDeficiency.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\Main.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\NitrogenDeficiency.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\Plant.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\PotassiumDeficiency.java
+C:\Users\ADMIN\Downloads\PlantCare\PlantCare\src\plantcare\WebServer.java
