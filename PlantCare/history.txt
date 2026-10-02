@@ -10,3 +10,4 @@
 2026-10-02 13:25|Banana|Potassium Deficiency|LOW
 2026-10-02 13:25|Tomato|Magnesium Deficiency|MEDIUM
 2026-10-02 13:26|Rice|Nitrogen Deficiency|MEDIUM
+2026-10-02 16:31|Coconut|Nitrogen Deficiency|MEDIUM
