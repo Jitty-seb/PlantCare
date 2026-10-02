@@ -1,0 +1,12 @@
+2026-10-02 11:31|Tomato|Nitrogen Deficiency|MEDIUM
+2026-10-02 11:34|Rice|Nitrogen Deficiency|MEDIUM
+2026-10-02 11:34|Tomato|Potassium Deficiency|MEDIUM
+2026-10-02 11:38|Tomato|Nitrogen Deficiency|MEDIUM
+2026-10-02 13:20|Banana|Nitrogen Deficiency|MEDIUM
+2026-10-02 13:21|Brinjal|Potassium Deficiency|MEDIUM
+2026-10-02 13:21|Coconut|Nitrogen Deficiency|LOW
+2026-10-02 13:21|Rice|Iron Deficiency|MEDIUM
+2026-10-02 13:24|Okra|Nitrogen Deficiency|MEDIUM
+2026-10-02 13:25|Banana|Potassium Deficiency|LOW
+2026-10-02 13:25|Tomato|Magnesium Deficiency|MEDIUM
+2026-10-02 13:26|Rice|Nitrogen Deficiency|MEDIUM

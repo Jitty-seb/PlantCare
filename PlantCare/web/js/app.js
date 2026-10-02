@@ -1,3 +1,9 @@
+// Apply the saved theme on every page (so it stays the same when you move between pages)
+try {
+  document.documentElement.dataset.theme = localStorage.getItem("theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+} catch (e) { document.documentElement.dataset.theme = "light"; }
+
 // PlantCare frontend. The diagnosis itself is done by the Java backend - JS only sends and shows data.
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -67,11 +73,12 @@ function showResult(r) {
         <h4>Prevention</h4><p>${esc(r.prevention)}</p>
         <h4>Why this result?</h4><p>${esc(r.explanation)}</p>
         ${warn}
-        <div class="actions">${expertBtn}<button class="btn ghost" id="again" type="button">New Diagnosis</button></div>
+        <div class="actions">${expertBtn}<button class="btn ghost" id="dl" type="button">⬇ Download Report</button><button class="btn ghost" id="again" type="button">New Diagnosis</button></div>
       </div>
     </section>`;
   form.hidden = true;
   requestAnimationFrame(() => { const b = document.querySelector(".bar i"); if (b) b.style.width = b.dataset.w; });
+  $("#dl").addEventListener("click", () => downloadReport(r));
   $("#again").addEventListener("click", () => {
     form.reset(); form.hidden = false; $("#result").innerHTML = ""; window.scrollTo({ top: 0, behavior: "smooth" });
   });
@@ -90,7 +97,7 @@ if (list) {
     .then((experts) => {
       list.innerHTML = experts.map((x) => `
         <article class="card">
-          <div class="ex-top"><div class="avatar">${esc(initials(x.name))}</div>
+          <div class="ex-top"><div class="avatar"><img class="aimg" src="assets/experts/expert-${x.id}.jpg" alt="" onerror="this.remove()">${esc(initials(x.name))}</div>
             <div><h3>${esc(x.name)}</h3><small>${esc(x.specialization)}</small></div></div>
           <p class="meta">🏅 ${x.years} years experience<br>📍 ${esc(x.location)}</p>
           <button class="btn" data-id="${x.id}" style="margin-top:14px">View Profile</button>
@@ -108,7 +115,7 @@ if (list) {
 function openProfile(x) {
   $("#modal-box").innerHTML = `
     <div class="bubble" style="margin:0 auto 12px;font-size:.9rem">Hi, I'm ${esc(x.name.replace(/^Dr\.\s*/, "").split(" ")[0])}! Ask me about ${esc(x.deficiencies.join(", "))}.</div>
-    <div class="pavatar">${expertAvatar(x)}</div>
+    <div class="pavatar">${expertAvatar(x)}<img class="pimg" src="assets/experts/expert-${x.id}.jpg" alt="${esc(x.name)}" onerror="this.remove()"></div>
     <h2 style="margin:10px 0 0;text-align:center">${esc(x.name)}</h2>
     <p class="meta" style="text-align:center">${esc(x.specialization)}</p>
     <p style="margin:14px 0">${esc(x.description)}</p>
@@ -287,41 +294,182 @@ function plantScene(r, cure) {
     ${k ? bottle : ""}</svg>`;
 }
 
-// ---------- Animated expert avatars (only shown in the profile popup) ----------
+// ---------- Illustrated expert portraits (shown in the profile popup; real photos override them) ----------
 const PEOPLE = {
-  1: { skin: "#f1c8a5", hair: "#2b1b12", style: "long",  top: "#ffffff", inner: "#16a34a", coat: true, glasses: true },
-  2: { skin: "#c68a5e", hair: "#1f1a17", style: "short", top: "#16a34a", stache: true },
-  3: { skin: "#d9a077", hair: "#3a2416", style: "bun",   top: "#ffffff", inner: "#0ea5e9", coat: true },
-  4: { skin: "#e8b98f", hair: "#4a3020", style: "hat",   top: "#2563eb" },
-  5: { skin: "#b9794f", hair: "#2a1a10", style: "bob",   top: "#f59e0b" }
+  1: { f: true, skin: ["#e8b88f", "#d9a074", "#b9805a"], hair: "#2b1b12", style: "long", top: "#f8fafc", inner: "#16a34a", coat: true, glasses: true, bg: ["#c9ece6", "#7cc7b8"] },
+  2: { skin: ["#cc916a", "#b87a52", "#94603d"], hair: "#1f1a17", style: "short", top: "#2f8f4e", stache: true, bg: ["#fde9b8", "#9fd18b"] },
+  3: { f: true, skin: ["#e0ab82", "#cf9468", "#a97048"], hair: "#3a2416", style: "bun", top: "#f8fafc", inner: "#0ea5e9", coat: true, bg: ["#d6e6f7", "#9cc3e8"] },
+  4: { skin: ["#d69d72", "#c28659", "#9c6843"], hair: "#4a3020", style: "hat", top: "#2563eb", bg: ["#d8f0c4", "#7fc06b"] },
+  5: { f: true, skin: ["#bd855d", "#a96f48", "#865433"], hair: "#2a1a10", style: "bob", top: "#f59e0b", bg: ["#ffe4c7", "#a8d08d"] }
 };
 function expertAvatar(x) {
-  const p = PEOPLE[x.id] || PEOPLE[1], d = "#3b1f0d";
+  const p = PEOPLE[x.id] || PEOPLE[1], [sl, sm, sd] = p.skin, d = "#2a1608";
+  const lip = p.f ? "#bf5650" : "#9c5a4c";
+
+  // hair behind the head (long / bob)
   const hairBack = p.style === "long"
-    ? `<path d="M56 100 Q52 45 100 45 Q148 45 144 100 L152 156 Q100 170 48 156Z" fill="${p.hair}"/>`
-    : p.style === "bob" ? `<path d="M56 105 Q50 48 100 48 Q150 48 144 105 Q144 130 130 132 L70 132 Q56 130 56 105Z" fill="${p.hair}"/>` : "";
-  const coat = p.coat
-    ? `<path d="M84 143 L100 168 L116 143Z" fill="${p.inner}"/><path d="M84 143 L100 174 M116 143 L100 174" stroke="#cbd5e1" stroke-width="2" fill="none"/>` : "";
-  const fringe = `<path d="M60 90 Q58 50 100 50 Q142 50 140 90 Q124 68 100 70 Q76 68 60 90Z" fill="${p.hair}"/>`;
+    ? `<path d="M58 96 Q54 46 100 44 Q146 46 142 96 L148 162 Q100 174 52 162Z" fill="${p.hair}"/>`
+    : p.style === "bob"
+      ? `<path d="M57 100 Q52 46 100 44 Q148 46 143 100 Q143 128 128 132 L72 132 Q57 128 57 100Z" fill="${p.hair}"/>` : "";
+
+  // shoulders: lab coat with shirt + badge, or a plain shirt with a V neckline
+  const body = `<rect x="88" y="120" width="24" height="34" rx="10" fill="${sm}"/>
+    <path d="M26 200 Q28 150 78 144 L100 158 L122 144 Q172 150 174 200Z" fill="${p.top}"/>
+    <path d="M122 144 Q172 150 174 200 L140 200 Q150 160 122 144Z" fill="#000" opacity=".07"/>`
+    + (p.coat
+      ? `<path d="M84 144 L100 176 L116 144Z" fill="${p.inner}"/><path d="M78 144 L98 184 M122 144 L102 184" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+         <rect x="126" y="166" width="17" height="11" rx="2" fill="#fff" stroke="#9ca3af"/><rect x="129" y="169" width="6" height="2.2" fill="#16a34a"/><rect x="129" y="173" width="10" height="1.6" fill="#9ca3af"/>`
+      : `<path d="M82 144 L100 168 L118 144Z" fill="${sm}"/><path d="M78 144 L100 170 L122 144" stroke="#000" stroke-opacity=".15" stroke-width="2" fill="none"/>`)
+    + `<ellipse cx="100" cy="134" rx="20" ry="9" fill="#000" opacity=".14"/>`;
+
+  // hair in front of the head
+  const fringe = `<path d="M62 92 Q60 50 100 50 Q140 50 138 92 Q130 66 104 62 Q80 64 62 92Z" fill="${p.hair}"/><path d="M72 68 Q86 56 108 58" stroke="#fff" stroke-opacity=".18" stroke-width="3" fill="none" stroke-linecap="round"/>`;
   let hairFront = fringe;
-  if (p.style === "bun") hairFront = `<circle cx="100" cy="40" r="14" fill="${p.hair}"/>` + fringe;
-  if (p.style === "hat") hairFront = `<path d="M62 76 Q62 38 100 38 Q138 38 138 76Z" fill="#facc15"/><rect x="63" y="65" width="74" height="7" fill="#b45309"/><ellipse cx="100" cy="76" rx="56" ry="9" fill="#eab308"/>`;
-  const eye = (cx) => `<circle cx="${cx}" cy="98" r="5.5" fill="${d}"/><circle cx="${cx + 2}" cy="96" r="1.9" fill="#fff"/>`;
-  const glasses = p.glasses ? `<g fill="rgba(255,255,255,.25)" stroke="#334155" stroke-width="2.5"><circle cx="85" cy="98" r="12"/><circle cx="115" cy="98" r="12"/><path d="M97 98 H103" fill="none"/></g>` : "";
-  const stache = p.stache ? `<path d="M86 113 Q100 106 114 113 Q100 119 86 113Z" fill="${p.hair}"/>` : "";
-  const mouthY = p.stache ? 121 : 116;
+  if (p.style === "bun") hairFront = `<circle cx="100" cy="38" r="13" fill="${p.hair}"/>` + fringe;
+  if (p.style === "short") hairFront = `<path d="M63 90 Q60 46 100 46 Q140 46 137 90 Q134 66 118 60 Q100 56 82 60 Q66 66 63 90Z" fill="${p.hair}"/><path d="M76 62 Q92 52 114 56" stroke="#fff" stroke-opacity=".15" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  const hat = p.style === "hat"
+    ? `<ellipse cx="100" cy="82" rx="38" ry="6" fill="#000" opacity=".16"/>
+       <path d="M64 74 Q66 34 100 34 Q134 34 136 74Z" fill="#e8c05a"/><rect x="64" y="64" width="72" height="8" fill="#9a5b1f"/>
+       <path d="M74 50 Q100 42 126 50 M70 58 Q100 50 130 58" stroke="#c8952b" stroke-opacity=".6" stroke-width="2" fill="none"/>
+       <ellipse cx="100" cy="74" rx="58" ry="10" fill="#d9a93f"/>` : "";
+  if (p.style === "hat") hairFront = `<path d="M63 80 Q61 96 64 108 L68 100Z M137 80 Q139 96 136 108 L132 100Z" fill="${p.hair}"/>`;
+
+  // face details
+  const eye = (cx) => `<path d="M${cx - 8} 92 Q${cx} 85 ${cx + 8} 92 Q${cx} 98 ${cx - 8} 92Z" fill="#fff"/><circle cx="${cx}" cy="92" r="4.3" fill="#4a2c17"/><circle cx="${cx}" cy="92" r="2" fill="#120a04"/><circle cx="${cx + 1.4}" cy="90.6" r="1.2" fill="#fff"/><path d="M${cx - 8} 92 Q${cx} 85 ${cx + 8} 92" stroke="${d}" stroke-width="1.9" fill="none" stroke-linecap="round"/>`;
+  const brows = `<path d="M76 82 Q85 77 94 81 M106 81 Q115 77 124 82" stroke="${p.hair}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  const nose = `<path d="M100 95 L98 107 Q100 110 104 107" stroke="${sd}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const my = p.stache ? 120 : 117;
+  const mouth = `<path d="M89 ${my} Q100 ${my + 10} 111 ${my} Q100 ${my + 4} 89 ${my}Z" fill="${lip}"/>`;
+  const stache = p.stache ? `<path d="M87 114 Q100 107 113 114 Q100 117 87 114Z" fill="${p.hair}"/><ellipse cx="100" cy="122" rx="24" ry="14" fill="${p.hair}" opacity=".1"/>` : "";
+  const glasses = p.glasses ? `<g fill="rgba(255,255,255,.12)" stroke="#1f2937" stroke-width="2"><rect x="73" y="83" width="24" height="18" rx="7"/><rect x="103" y="83" width="24" height="18" rx="7"/><path d="M97 91 H103 M73 90 L65 88 M127 90 L135 88" fill="none"/></g>` : "";
+  const blush = `<ellipse cx="77" cy="108" rx="7" ry="4" fill="#e07a6b" opacity=".25"/><ellipse cx="123" cy="108" rx="7" ry="4" fill="#e07a6b" opacity=".25"/>`;
+
   return `<svg viewBox="0 0 200 200" role="img" aria-label="${esc(x.name)}">
-    <g class="pbob">
-    ${hairBack}
-    <path d="M38 200 Q38 142 100 142 Q162 142 162 200Z" fill="${p.top}" stroke="#d1d5db" stroke-width="${p.coat ? 2 : 0}"/>${coat}
-    <rect x="90" y="122" width="20" height="26" rx="8" fill="${p.skin}"/>
-    <circle cx="61" cy="98" r="7" fill="${p.skin}"/><circle cx="139" cy="98" r="7" fill="${p.skin}"/>
-    <circle cx="100" cy="92" r="40" fill="${p.skin}"/>
-    ${hairFront}
-    <ellipse cx="75" cy="110" rx="8" ry="5" fill="#ff8fa3" opacity=".5"/><ellipse cx="125" cy="110" rx="8" ry="5" fill="#ff8fa3" opacity=".5"/>
-    <g class="peyes">${eye(85)}${eye(115)}</g>${glasses}${stache}
-    <path d="M89 ${mouthY} Q100 ${mouthY + 11} 111 ${mouthY}" stroke="${d}" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-    <g class="wave"><path d="M150 172 Q178 154 180 122" stroke="${p.top}" stroke-width="17" fill="none" stroke-linecap="round"/><circle cx="180" cy="112" r="10" fill="${p.skin}"/></g>
-    <text class="zz" x="14" y="62" font-size="22">🌿</text>
+    <defs><linearGradient id="bgp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.bg[0]}"/><stop offset="1" stop-color="${p.bg[1]}"/></linearGradient>
+      <radialGradient id="sk" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="${sl}"/><stop offset=".7" stop-color="${sm}"/><stop offset="1" stop-color="${sd}"/></radialGradient></defs>
+    <rect width="200" height="200" fill="url(#bgp)"/>
+    <circle cx="28" cy="46" r="26" fill="#fff" opacity=".2"/><circle cx="172" cy="70" r="34" fill="#fff" opacity=".16"/><circle cx="160" cy="26" r="14" fill="#fff" opacity=".22"/>
+    <path d="M0 200 Q20 150 60 140 Q30 170 40 200Z" fill="#1f7a3a" opacity=".25"/><path d="M200 200 Q184 160 150 150 Q176 176 168 200Z" fill="#1f7a3a" opacity=".25"/>
+    <g class="phead">${hairBack}</g>
+    <g class="pbody">${body}</g>
+    <g class="phead">
+      <ellipse cx="64" cy="95" rx="5" ry="8" fill="${sm}"/><ellipse cx="136" cy="95" rx="5" ry="8" fill="${sm}"/>
+      <ellipse cx="100" cy="92" rx="35" ry="43" fill="url(#sk)"/>
+      ${blush}${brows}<g class="peyes">${eye(85)}${eye(115)}</g>${glasses}${nose}${mouth}${stache}
+      ${hairFront}${hat}
     </g></svg>`;
+}
+// ---------- Dark / light theme ----------
+const themeBtn = document.createElement("button");
+themeBtn.className = "langbtn themebtn"; themeBtn.type = "button";
+function paintThemeBtn() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  themeBtn.textContent = dark ? "☀️" : "🌙";
+  themeBtn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+}
+themeBtn.addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("theme", next); } catch (e) { /* ignore */ }
+  paintThemeBtn();
+});
+paintThemeBtn();
+$(".nav nav").appendChild(themeBtn);
+
+// ---------- Whimsical nature: floating fireflies ----------
+(function nature() {
+  let seed = 7;                                           // fixed seed => same look on every page
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+  for (let i = 0; i < 16; i++) {                     // fireflies / pollen drifting in the background
+    const f = document.createElement("span");
+    f.className = "fly";
+    f.style.cssText = `left:${(rnd() * 100).toFixed(1)}%;top:${(rnd() * 100).toFixed(1)}%;--t:${(5 + rnd() * 6).toFixed(1)}s;--d:-${(rnd() * 8).toFixed(1)}s`;
+    document.body.appendChild(f);
+  }
+})();
+
+// ---------- Download report (a small PDF written by hand - no library needed) ----------
+ML["Download Report"] = "റിപ്പോർട്ട് ഡൗൺലോഡ് ചെയ്യുക";
+
+function makePDF(r) {
+  const W = 595, H = 842, M = 48;                         // A4 page in points
+  const ascii = (t) => String(t).replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/[\u2013\u2014\u00B7]/g, "-").replace(/[^\x20-\x7E]/g, "");
+  const pdfText = (t) => ascii(t).replace(/([\\()])/g, "\\$1");
+  const pages = [""];
+  let y = H - 125;
+  const put = (c) => { pages[pages.length - 1] += c; };
+
+  // green header band
+  put(`0.09 0.64 0.29 rg 0 ${H - 95} ${W} 95 re f\n`);
+  put(`BT /F2 26 Tf 1 1 1 rg ${M} ${H - 50} Td (PlantCare - Diagnosis Report) Tj ET\n`);
+  put(`BT /F1 11 Tf 0.9 1 0.92 rg ${M} ${H - 74} Td (Smart Plant Health & Expert Connect) Tj ET\n`);
+
+  // writes wrapped text, starting a new page when needed
+  function text(t, size, bold, rgb) {
+    const max = Math.floor((W - 2 * M) / (size * 0.52));
+    let line = "";
+    const flush = () => {
+      if (y < 70) { pages.push(""); y = H - 60; }
+      put(`BT /${bold ? "F2" : "F1"} ${size} Tf ${rgb} rg ${M} ${y} Td (${pdfText(line)}) Tj ET\n`);
+      y -= size + 6; line = "";
+    };
+    for (const w of ascii(t).split(/\s+/).filter(Boolean)) {
+      if (line && (line + " " + w).length > max) flush();
+      line = line ? line + " " + w : w;
+    }
+    if (line) flush();
+  }
+  const heading = (t) => { y -= 8; text(t.toUpperCase(), 10, true, "0.09 0.5 0.25"); };
+  const body = (t) => text(t, 12, false, "0.1 0.14 0.12");
+
+  text(`Date: ${new Date().toLocaleString("en-GB")}`, 10, false, "0.4 0.45 0.42");
+  y -= 6;
+  heading("Plant"); body(r.plant);
+  heading("Possible deficiency"); text(r.deficiency, 20, true, "0.06 0.33 0.18");
+  heading("Confidence");
+  body(`${r.confidence} (score ${r.score})`);
+  const pct = { HIGH: 1, MEDIUM: 0.66, LOW: 0.33 }[r.confidence] || 0.33;
+  const col = { HIGH: "0.09 0.64 0.29", MEDIUM: "0.92 0.7 0.03", LOW: "0.98 0.45 0.09" }[r.confidence] || "0.98 0.45 0.09";
+  put(`0.88 0.92 0.9 rg ${M} ${y} 220 9 re f\n${col} rg ${M} ${y} ${Math.round(220 * pct)} 9 re f\n`);
+  y -= 22;
+  heading("Matched symptoms");
+  (r.matched.length ? r.matched : ["None"]).forEach((m) => body("- " + m));
+  heading("Recommended action"); body(r.treatment);
+  heading("Prevention"); body(r.prevention);
+  heading("Why this result?"); body(r.explanation);
+  if (r.preliminary) {
+    y -= 8;
+    text("NOTE: This result is preliminary. Please consult an agricultural expert.", 11, true, "0.7 0.3 0.04");
+  }
+  y -= 14;
+  text("PlantCare provides preliminary symptom-based guidance and is not a substitute for professional agricultural diagnosis.", 9, false, "0.4 0.45 0.42");
+
+  // assemble the PDF file: objects 1-4 are catalog, page list and two fonts; then a page + content stream per page
+  const objs = [];
+  objs[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+  objs[2] = `<< /Type /Pages /Kids [${pages.map((_, i) => `${5 + 2 * i} 0 R`).join(" ")}] /Count ${pages.length} >>`;
+  objs[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>";
+  objs[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>";
+  pages.forEach((c, i) => {
+    objs[5 + 2 * i] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6 + 2 * i} 0 R >>`;
+    objs[6 + 2 * i] = `<< /Length ${c.length} >>\nstream\n${c}\nendstream`;
+  });
+  let pdf = "%PDF-1.4\n";
+  const offs = [];
+  for (let i = 1; i < objs.length; i++) { offs[i] = pdf.length; pdf += `${i} 0 obj\n${objs[i]}\nendobj\n`; }
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objs.length}\n0000000000 65535 f \n` + offs.slice(1).map((o) => String(o).padStart(10, "0") + " 00000 n \n").join("");
+  pdf += `trailer\n<< /Size ${objs.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return new Blob([pdf], { type: "application/pdf" });
+}
+
+function downloadReport(r) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(makePDF(r));
+  a.download = `PlantCare-${r.plant}-${r.deficiency.replace(/[^A-Za-z]+/g, "-")}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
 }

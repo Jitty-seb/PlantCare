@@ -142,3 +142,85 @@ select:focus{outline:2px solid var(--g3)}
 .peyes{transform-origin:100px 98px;animation:blink 4.5s infinite}
 @keyframes pbob{to{transform:translateY(-4px)}}
 @keyframes wave{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+
+/* ---- expert photos ---- */
+.avatar{position:relative;overflow:hidden}
+.aimg,.pimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pavatar{position:relative}
+.bubble{color:#10241a}
+.themebtn{padding:6px 11px}
+
+/* ---- dark theme ---- */
+:root{color-scheme:dark;--bg:#0c1712;--ink:#e6f2ea;--mute:#9bb2a4;--card:#13231b;--line:#223629;--g1:#86efac;--shadow:0 10px 30px rgba(0,0,0,.35)}
+:root .nav{background:rgba(12,23,18,.85)}
+:root .foot,:root select,:root .sym b,:root .langbtn,:root .modal-box{background:var(--card)}
+:root select{color:var(--ink)}
+:root .pill,:root .nav nav a:hover,:root .nav nav a.on,:root .icon,:root .tag,:root .banner,:root .sym input:checked+b,:root .langbtn:hover{background:#173a2b}
+:root .btn{background:linear-gradient(135deg,#16a34a,#15803d)}
+:root .btn.ghost{background:var(--card);color:var(--g1)}
+:root .avatar{color:#14532d}
+:root .blob{background:radial-gradient(circle at 30% 30%,#1f6b43,#15402b 60%,transparent 72%)}
+:root .bar{background:#223629}
+:root .cure{background:linear-gradient(135deg,#113222,#164431)}
+:root .warn{background:#3a2e10;border-color:#6b5316;color:#fcd98a}
+:root .error{color:#f87171}
+:root .stage{background:linear-gradient(160deg,#123524,#1c5a3a)}
+:root .k-Nitrogen{background:linear-gradient(160deg,#3a3515,#5b501a)}
+:root .k-Potassium{background:linear-gradient(160deg,#3d2a17,#6b4420)}
+:root .k-Iron{background:linear-gradient(160deg,#2a2545,#40386b)}
+:root .k-Magnesium{background:linear-gradient(160deg,#2c3a14,#475d1c)}
+:root .pavatar{background:linear-gradient(160deg,#123524,#1c5a3a)}
+:root .modal{background:rgba(0,0,0,.65)}
+body,.nav,.card,.foot{transition:background-color .3s,color .3s,border-color .3s}
+
+.pavatar{width:170px;height:170px;box-shadow:0 10px 24px rgba(0,0,0,.2);border:4px solid var(--card)}
+.pbody{transform-origin:100px 200px;animation:breath 4s ease-in-out infinite alternate}
+.phead{transform-origin:100px 140px;animation:tilt 5s ease-in-out infinite alternate}
+.peyes{transform-origin:100px 92px}
+@keyframes breath{to{transform:translateY(-2px) scale(1.01)}}
+@keyframes tilt{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
+
+/* ---- nature theme ---- */
+:root{--vine:#4f9a3a}
+:root{--vine:#3f9a55}
+body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg fill='%2316a34a' fill-opacity='.07'%3E%3Cpath d='M20 30c10-18 30-18 36 0-10 14-26 14-36 0z' transform='rotate(-30 38 30)'/%3E%3Cpath d='M90 100c10-18 30-18 36 0-10 14-26 14-36 0z' transform='rotate(40 108 100)'/%3E%3Ccircle cx='100' cy='30' r='3'/%3E%3Ccircle cx='30' cy='110' r='2.5'/%3E%3C/g%3E%3C/svg%3E")}
+main{position:relative;z-index:1}
+.card{border-radius:28px 10px 28px 10px}
+.modal-box{border-radius:30px 10px 30px 10px}
+.btn{border-radius:18px 6px 18px 6px}
+.title::before{content:"🌿 "}
+.section h2::before{content:"🍃 "}
+.vl{fill:#5cb85c}.vl2{fill:#8fd16f}
+:root .vl{fill:#3f9d5a}:root .vl2{fill:#66bb7f}
+.vines{position:absolute;top:100%;left:0;right:0;height:0;pointer-events:none;z-index:4}
+.garland{position:absolute;left:0;top:-9px;overflow:visible}
+.vine{position:absolute;top:2px;overflow:visible;transform-origin:50% 0;animation:vsway var(--t) ease-in-out infinite alternate;animation-delay:var(--d)}
+@keyframes vsway{from{transform:rotate(-3.5deg)}to{transform:rotate(3.5deg)}}
+.fly{position:fixed;width:6px;height:6px;border-radius:50%;background:#fde68a;box-shadow:0 0 10px 3px rgba(250,204,21,.5);opacity:0;pointer-events:none;z-index:0;animation:drift var(--t) ease-in-out infinite;animation-delay:var(--d)}
+@keyframes drift{0%,100%{opacity:0;transform:translate(0,0)}50%{opacity:.8;transform:translate(26px,-34px)}}
+.hero-art{height:auto;display:block}
+.hscene{display:block;width:100%;height:auto;max-height:440px;filter:drop-shadow(0 14px 18px rgba(20,83,45,.18))}
+.h1{fill:#bbf7d0}.h2{fill:#86efac}
+:root .h1{fill:#14532d}:root .h2{fill:#166534}
+.hsw{transform-origin:230px 335px;animation:sway2 4.5s ease-in-out infinite alternate}
+.sun{transform-origin:380px 70px;animation:pulse 4s ease-in-out infinite}
+.bfly{animation:flyb 16s ease-in-out infinite}
+.wing{transform-origin:0 0;animation:flap .3s ease-in-out infinite alternate}
+.ff{animation:twinkle 2.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.15);opacity:.55}}
+@keyframes flap{to{transform:scaleX(.3)}}
+@keyframes flyb{0%,100%{transform:translate(60px,130px)}25%{transform:translate(150px,80px)}50%{transform:translate(340px,120px)}75%{transform:translate(390px,210px)}}
+.foot{position:relative;margin-top:30px}
+.foot::before{content:"";position:absolute;left:0;right:0;top:-22px;height:22px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='22' viewBox='0 0 80 22'%3E%3Cpath fill='%2386efac' d='M0 22L6 6l4 16 8-20 6 20 8-12 6 12 10-18 6 18 8-10 6 10 6-14 6 14z'/%3E%3C/svg%3E") repeat-x bottom;pointer-events:none}
+:root .foot::before{filter:brightness(.45)}
+
+html{background:var(--bg)}
+
+/* dark theme only: ignore any saved/old light setting */
+html{background:var(--bg)!important;color-scheme:dark!important}
+.themebtn{display:none!important}
+
+/* profile popup: scroll inside it when the content is taller than the screen */
+.modal{overflow:hidden}
+.modal-box{max-height:calc(100vh - 40px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media (max-height:720px){.pavatar{width:120px;height:120px}}
